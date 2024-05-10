@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -181,10 +182,25 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin{
                         final List<dynamic> charts = parameterData['chart'];
                         double minY = double.infinity;
                         double maxY = -double.infinity;
+                        List<String> subParameters = [];
+
+                        List<LineChartBarData> lineBarsData = [];
+
+
 
                         // Iterate over each chart data to find minY and maxY values for the parameter
                         for (final chartData in charts) {
                           final List<dynamic> data = chartData['data'];
+                          print("chart[$index]=${chartData['data']}");
+                          print("param[$index]=${chartData['name']}");
+                          String result = chartData['name'].split(" : ")[1];
+
+                          print(result); // Output: Ia
+                          subParameters.add(result); // Add 'result' to the subParameters list
+
+
+
+
 
                           for (final entry in data) {
                             final value = entry[1].toDouble();
@@ -198,6 +214,49 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin{
                             }
                           }
                         }
+                        print(subParameters);
+                        List<Color> generateRandomColors(int n) {
+                          Random random = Random();
+                          List<Color> colors = [];
+
+                          for (int i = 0; i < n; i++) {
+                            // Generate random RGB values
+                            int r = random.nextInt(256);
+                            int g = random.nextInt(256);
+                            int b = random.nextInt(256);
+
+                            // Create Color object with random RGB values
+                            Color color = Color.fromARGB(255, r, g, b);
+                            colors.add(color);
+                          }
+
+                          return colors;
+                        }
+                        List <Color> randomColors = generateRandomColors(subParameters.length);
+                        print("random colors populated");
+                        print(randomColors);
+                        for (int index = 0; index < charts.length; index++) {
+                          final chartData = charts[index];
+                          final List<dynamic> data = chartData['data'];
+                          final List<FlSpot> lineChartData = data.map((entry) => FlSpot(
+                            data.indexOf(entry).toDouble(),
+                            entry[1].toDouble(), // Assuming entry is a List<dynamic> with [timestamp, value]
+                          )).toList();
+                          print("indddddddddddddd$index");
+                          print("rrrrrrrrrrrrrrr$randomColors");
+                          lineBarsData.add(
+                            LineChartBarData(
+                              spots: lineChartData,
+                              isCurved: true,
+                              color: randomColors[index], // Assign a color from the list
+                              barWidth: 2,
+                              isStrokeCapRound: true,
+                              belowBarData: BarAreaData(show: false),
+                            ),
+                          );
+                        }
+
+
 
                         // Calculate additional padding for minY and maxY
                         final double padding = (maxY - minY) * 0.1;
@@ -215,6 +274,7 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin{
                                     '$parameterLabel :',
                                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                   ),
+                                  SizedBox(width: 20,),
                                 ],
                               )
                             ),
@@ -232,26 +292,44 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin{
                                   maxX: charts[0]['data'].length.toDouble() - 1,
                                   minY: minY - padding,
                                   maxY: maxY + padding,
-                                  lineBarsData: charts.map((chartData) {
-                                    // Prepare data for each line chart
-                                    final List<dynamic> data = chartData['data'];
-                                    final List<FlSpot> lineChartData = data.map((entry) => FlSpot(
-                                      data.indexOf(entry).toDouble(),
-                                      entry[1].toDouble(), // Assuming entry is a List<dynamic> with [timestamp, value]
-                                    )).toList();
-                                    return LineChartBarData(
-                                      spots: lineChartData,
-                                      isCurved: true,
-                                      color: Colors.blue,
-                                      barWidth: 2,
-                                      isStrokeCapRound: true,
-                                      belowBarData: BarAreaData(show: false),
-                                    );
-                                  }).toList(),
+                                  lineBarsData: lineBarsData
+
                                 ),
 
                               ),
                             ),
+                            ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: subParameters.length,
+                                itemBuilder: (context, index){
+                                  return SizedBox(
+                                    height: 20,
+                                    child: Row(
+                                      children: [
+                                        SizedBox(width: 150,),
+                                        Column(
+                                          children: [
+                                            (
+                                                Container(
+                                                  height: 10,
+                                                  width: 10,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(20),
+                                                      color: randomColors[index]
+                                                  ),
+                                                )
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(width: 10,),
+                                        Text(subParameters[index])
+                                      ],
+                                    ),
+                                  );
+                                }),
+                            SizedBox(height: 10,),
+
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 11.0), // Adjust the horizontal padding
                               child: Container(
@@ -291,7 +369,8 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin{
                                 ),
                               ),
                             ),
-                            SizedBox(height: 20,)
+
+                            SizedBox(height: 20,),
                           ],
                         );
                       },

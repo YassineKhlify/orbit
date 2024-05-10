@@ -14,6 +14,10 @@ import 'add_usine.dart';
 import 'analytics_page.dart';
 
 class HomePage extends StatefulWidget {
+  final String id;
+  final String userName;
+  HomePage({required this.id,required this.userName});
+
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -79,7 +83,7 @@ class _HomePageState extends State<HomePage> {
               ),
               onPressed: (){
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context)=>AnalyticsPage()));
+                    MaterialPageRoute(builder: (context)=>AnalyticsPage(id: widget.id)));
                 // Add functionality for Item 1
 
               },
@@ -168,66 +172,47 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min, // Set mainAxisSize to MainAxisSize.min
 
           children: [
-            // Static content
             Padding(
-              padding: EdgeInsets.all(10),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.grey[350]!, // Light grey color
-                  ),
-                  borderRadius: BorderRadius.circular(10.0), // Adjust the radius as needed
-
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                  "Welcome back 🎉,\n${widget.userName} !",
+                style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),
+                textAlign: TextAlign.left,
+              ),
+            ),
+            
+            Container(
+              margin: EdgeInsets.only(
+                left: 20,
+                right: 20
+              ),
+              width: double.infinity, // Adjust width as needed
+              height: 40, // Adjust height as needed
+              child: FilledButton.icon(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddUsinePage()));
+                  // Add your onPressed logic here
+                  print('Button pressed');
+                },
+                icon: Icon(Icons.add),
+                label: Text('Add Usine',
+                   // Adjust font size as needed
                 ),
-                padding: EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-
-                  children: [
-                    Text(
-                      "Welcome 🎉, Warda!",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18, // Adjust the font size as needed
-                      ),
-                    ),
-
-                    SizedBox(height: 10), // Adjust spacing as needed
-                    Divider(
-                      height: 1,
-                      color: Colors.grey[350],
-                      thickness: 1,
-                    ),
-                    SizedBox(height: 10), // Adjust spacing as needed
-
-                    SizedBox(
-                      width: 150, // Adjust width as needed
-                      height: 35, // Adjust height as needed
-                      child: FilledButton.icon(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>AddUsinePage()));
-                          // Add your onPressed logic here
-                          print('Button pressed');
-                        },
-                        icon: Icon(Icons.add),
-                        label: Text('Add Usine',
-                          style: TextStyle(fontSize: 13), // Adjust font size as needed
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0), // Adjust border radius as needed
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                style: ElevatedButton.styleFrom(
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Adjust border radius as needed
+                  ),
                 ),
               ),
             ),
+            SizedBox(height: 15,),
+
+            // Static content
 
 
             // Usine names from JSON
@@ -242,7 +227,7 @@ class _HomePageState extends State<HomePage> {
                   } else {
                     final Map<String, dynamic> data = snapshot.data as Map<String, dynamic>;
                     final List<dynamic> usines = data['usine'];
-                    //final int allDevices = data['allDevices'];
+                    final List<dynamic> allDevices = data['devices'];
                     //final int connectedDevices = data['connectedDevices'];
                     //final int disconnectedDevices = data['disconnectedDevices'];
                     return Column(
@@ -304,7 +289,7 @@ class _HomePageState extends State<HomePage> {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start, // Align content to the left
                                       children: [
-                                        Text("102", style: TextStyle(fontWeight: FontWeight.bold,   fontSize: 18.0, )),// Set the font size to 20)  // Set the font size to 20),
+                                        Text(allDevices.length.toString(), style: TextStyle(fontWeight: FontWeight.bold,   fontSize: 18.0, )),// Set the font size to 20)  // Set the font size to 20),
                                         Text("Reserved Devices"),
                                       ],
                                     ),
@@ -327,7 +312,7 @@ class _HomePageState extends State<HomePage> {
                                       crossAxisAlignment: CrossAxisAlignment.start, // Align content to the left
 
                                       children: [
-                                        Text("102", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                                        Text(allDevices.length.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
                                         Text("Connected Devices"),
                                       ],
                                     ),
@@ -620,7 +605,9 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = true;
 
   Future<Map<String, dynamic>> _connectToWebSocket() {
-    final String superUserId = '650aa3373def3736fdb3b666';
+    final String superUserId = widget.id;
+    print("aaaaaaaaaaaaaaaaaaaaaaa");
+    print(widget.id);
     //650aa3373def3736fdb3b666 sartex
     //651c2d1f11c488aed1d86344 warda
 
@@ -847,7 +834,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<dynamic>> fetchNotifications() async {
-    final response = await http.get(Uri.parse('https://orbitsmart.energy/notification/settings/active/650aa3373def3736fdb3b666'));
+    final response = await http.get(Uri.parse('https://orbitsmart.energy/notification/settings/active/${widget.id}'));
 
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, parse the JSON

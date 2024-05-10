@@ -13,6 +13,8 @@ import 'charts_page.dart';
 
 
 class AnalyticsPage extends StatefulWidget {
+  final String id;
+  AnalyticsPage({required this.id});
   @override
   _AnalyticsPageState createState() => _AnalyticsPageState();
 }
@@ -216,8 +218,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
   }
   void _connectToWebSocket() {
-    final String superUserId = '651c2d1f11c488aed1d86344';
-
+    final String superUserId = widget.id;
     channel = IOWebSocketChannel.connect(
         'wss://orbitsmart.energy/Mongo/get_analyse_devices_by_user_id');
 

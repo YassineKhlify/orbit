@@ -34,6 +34,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool auth = false;
+    const warda="651c2d1f11c488aed1d86344";
+    const delice = "6506dfa5aa3237acf9bd8c7e";
+    const sartex = "650aa3373def3736fdb3b666";
     return Scaffold(
 
       body: SingleChildScrollView(
@@ -136,12 +140,41 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
+
+                    String _id = '';
                     print("email: ${_emailController.text}");
-                    print("email: ${_passwordController.text}");
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    );
+                    print("password: ${_passwordController.text}");
+                    var email = _emailController.text;
+                    var password = _passwordController.text;
+                    if (email=="warda@warda.com"&&password=="warda"){
+                      print("object");
+                      _id=warda;
+                      auth = true;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage(id : _id,userName:"Warda")),
+                      );
+
+                    }
+                    else if (email=="sartex@sartex.com"&&password=="sartex"){
+                      _id=sartex;
+                      auth = true;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage(id : _id,userName:"Sartex")),
+                      );
+
+                    }
+                    else if(email=="delice@delice.com"&&password=="delice"){
+                      _id=delice;
+                      auth = true;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage(id : _id,userName: "DELICE")),
+                      );
+
+                    }
+
 
 
                     // Add your button onPressed functionality here

@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:orbit/view_station.dart';
 class StationConsumption {
   final String name;
   final double min;
@@ -347,6 +348,13 @@ class _UsineConsumptionState extends State<UsineConsumption> with TickerProvider
         
                                       icon: Icon(Icons.remove_red_eye),
                                       onPressed: () {
+                                        var selectedStation = filteredStations[index];
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (context)=>ViewStationPage(
+                                              data: widget.data,
+                                              stationData: selectedStation,
+
+                                            )));
         
                                       },
                                       label: Text("View")),
@@ -434,8 +442,8 @@ class _UsineConsumptionState extends State<UsineConsumption> with TickerProvider
                                         showDialog(context: context, builder: (BuildContext context){
                                           return(
                                               AlertDialog(
-                                                title: Text('Delete Pates Warda Trigeneration'),
-                                                content: Text('Are you sure you want to delete "Pates Warda Trigeneration"?'),
+                                                title: Text('Delete ${filteredStations[index]['station_name']}'),
+                                                content: Text('Are you sure you want to delete "${filteredStations[index]['station_name']}"?'),
                                                 actions: [
                                                   TextButton(
                                                     onPressed: () {
