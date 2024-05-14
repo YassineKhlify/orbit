@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:orbit/add_device.dart';
 
 class ViewStationPage extends StatefulWidget {
+
   final Map<String, dynamic> data;
   final Map<String, dynamic> stationData;
 
@@ -14,15 +16,35 @@ class ViewStationPage extends StatefulWidget {
 }
 
 class _ViewStationPageState extends State<ViewStationPage> {
+  late TextEditingController _zoneNameController;
+  late TextEditingController _newZoneNameController;
+
+  void initState() {
+    super.initState();
+    _zoneNameController = TextEditingController();
+    _newZoneNameController = TextEditingController();
+
+  }
+  @override
+  void dispose() {
+    _zoneNameController.dispose();
+    _newZoneNameController.dispose();
+
+
+    super.dispose();
+  }
 
 
   @override
   Widget build(BuildContext context) {
     final userData = widget.data;
     final zonesData = userData['zones'];
+    final devicesData = userData['devices'];
 
     // Initialize a list to store filtered stations
     List<dynamic> filteredZones = [];
+    List filteredDevices = [];
+    List<String> zoneNames = [];
 
     // Iterate over station data entries
     zonesData.forEach((value) {
@@ -31,12 +53,16 @@ class _ViewStationPageState extends State<ViewStationPage> {
         filteredZones.add(value);
       }
     });
+
+
     print("yassssssssssss");
 
     // Print the filtered stations
     filteredZones.forEach((zone) {
+      zoneNames.add(zone["zone_name"].toString());
       print("Zone Name: ${zone['zone_name']}, Usine ID: ${zone['station_id']}");
     });
+    print("my zooooooooone namesssssss$zoneNames");
     // Print the filtered stations
     List<Color> generateRandomColors(int n) {
       Random random = Random();
@@ -77,17 +103,6 @@ class _ViewStationPageState extends State<ViewStationPage> {
 
     List<Color> randomColors = generateRandomColors(n);
 
-    List<PieChartSectionData> sections = List.generate(n, (index) {
-     final  integers = generateIntegersWithSum(n, sum);
-     print(integers);
-      return PieChartSectionData(
-        color: randomColors[index],
-        value: integers[index].toDouble(),
-        title: '${integers[index]}%', // Display the integer value as the title
-        radius: 90, // Adjust as needed
-        titleStyle: TextStyle(color: Colors.white),
-      );
-    });
     final List<double> barData = [8,10,1,5, 8, 10, 12, 6];
 
 
@@ -100,9 +115,381 @@ class _ViewStationPageState extends State<ViewStationPage> {
           fontSize: 18, // Adjust the font size as needed
         ),),
         actions: [
+          IconButton(onPressed: (){
+            showModalBottomSheet(context: context,isScrollControlled: true, builder: (BuildContext context){
+              filteredDevices.clear();
+              for (var i=0;i<filteredZones.length;i++){
+                print("object");
+                var selectedZone = filteredZones[i];
+                print(selectedZone["zone_name"]);
+                print("iiiiiiiiiiiiii$i");
+                var i2=0;
+
+
+                filteredDevices.add([]);
+                print(filteredDevices);
+                devicesData.forEach((value){
+                  if (value['zone_id'] == selectedZone["_id"]) {
+                    filteredDevices[i].add(value);
+                    i2++;
+                  }
+                });
+              }
+              return Container(
+                height: 500,
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.location_on,size: 27,),
+                        SizedBox(width: 5,),
+                        Text("Zones :",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                        SizedBox(width: 93,),
+                        FilledButton.icon(
+                            onPressed: (){
+                              showDialog(context: context, builder: (BuildContext context){
+
+                                return(
+                                    AlertDialog(
+                                      title: Text('Add Zone'),
+                                      content: Container(
+                                        height: 80,
+                                        child: Column(
+                                          children: [
+                                            TextField(
+                                              controller: _newZoneNameController,
+                                              decoration: InputDecoration(
+                                                labelText: 'Enter Zone Name',
+                                              ),
+                                            ),
+                                            SizedBox(height: 16.0),
+
+                                          ],
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(); // Close the dialog
+                                          },
+                                          child: Text('Cancel'),
+                                        ),
+                                        TextButton.icon(
+                                          icon: Icon(Icons.save),
+
+
+                                          onPressed: () {
+                                          },
+                                          label: Text('Save'),
+                                        ),
+                                      ],
+                                    ));
+                              });
+
+                            },
+                          style: ElevatedButton.styleFrom(
+                            elevation: 3,
+
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15), // Adjust border radius as needed
+                            ),
+                          ),
+
+                          label: Text("Add Zone"),
+                          icon: Icon(Icons.add),
+                        )
+
+                      ],
+                    ),
+                    SizedBox(height: 5,),
+                    Expanded(
+                      child:ListView.builder(
+                          itemCount: filteredZones.length,
+                          itemBuilder: (context, index){
+
+                            return Card(
+                              elevation: 3,
+                              child: ExpansionTile(
+                                title: Row(
+                                  children: [
+                                    Icon(Icons.location_on),
+                                    SizedBox(width: 5,),
+                                    Text(filteredZones[index]["zone_name"]),
+                                  ],
+                                ),
+                                children: [
+                                  Container(
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: filteredDevices[index].length,
+                                        itemBuilder: (context1, index1){
+
+                                        return (
+                                            Card(
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(12.0),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.smartphone),
+                                                    SizedBox(width: 5,),
+                                                    Text(filteredDevices[index][index1]["device_name"].toString())
+                                                  ],
+                                                ),
+                                              ),
+                                        ));
+                                        }),
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 205,),
+                                      IconButton(onPressed: (){
+                                        showDialog(context: context, builder: (BuildContext context){
+                                          return(
+                                              AlertDialog(
+                                                title: Text('Edit ${zoneNames[index]}'),
+                                                content: Container(
+                                                  height: 70,
+                                                  child: Column(
+                                                    children: [
+                                                      TextField(
+                                                        controller: _zoneNameController,
+                                                        decoration: InputDecoration(
+                                                          labelText: 'Enter Zone Name',
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop(); // Close the dialog
+                                                    },
+                                                    child: Text('Cancel'),
+                                                  ),
+                                                  TextButton.icon(
+                                                    icon: Icon(Icons.save),
+
+
+                                                    onPressed: () {
+                                                    },
+                                                    label: Text('Save'),
+                                                  ),
+                                                ],
+                                              ));
+                                        });
+
+                                      }, icon: Icon(Icons.edit)),
+                                      IconButton(onPressed: (){
+                                        showDialog(context: context, builder: (BuildContext context){
+                                          return(
+                                              AlertDialog(
+                                                title: Text('Delete ${zoneNames[index]}'),
+                                                content: Text('Are you sure you want to delete "${zoneNames[index]}"?'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop(); // Close the dialog
+                                                    },
+                                                    child: Text('Cancel'),
+                                                  ),
+                                                  TextButton(
+                                                    style: ButtonStyle(
+                                                      overlayColor: MaterialStateProperty.all<Color>(Colors.red.withOpacity(0.2)), // Adjust opacity level as needed
+
+                                                    ),
+
+                                                    onPressed: () {
+                                                    },
+                                                    child: Text('Delete',style: TextStyle(color: Colors.red),),
+                                                  ),
+                                                ],
+                                              ));
+                                        });
+
+                                      }, icon: Icon(Icons.delete),color: Colors.red,),
+                                    ],
+                                  )
+
+                                ],
+                              ),
+                            );
+                          }
+                      )
+                      ,
+                    )
+                  ],
+                ),
+              );
+
+            });
+          }, icon: Icon(Icons.location_on)),
+
           IconButton(
-              onPressed: (){},
-              icon: Icon(Icons.smartphone))
+              onPressed: (){
+                showModalBottomSheet(context: context, isScrollControlled: true,builder: (BuildContext context){
+                  filteredDevices.clear();
+                  for (var i=0;i<filteredZones.length;i++){
+                    print("object");
+                    var selectedZone = filteredZones[i];
+                    print(selectedZone["zone_name"]);
+                    print("iiiiiiiiiiiiii$i");
+                    var i2=0;
+
+
+                    filteredDevices.add([]);
+                    print(filteredDevices);
+                    devicesData.forEach((value){
+                      if (value['zone_id'] == selectedZone["_id"]) {
+                        filteredDevices[i].add(value);
+                        i2++;
+                      }
+                    });
+                  }
+
+                  return(
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    height: 500,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.smartphone,size: 27,),
+                            SizedBox(width: 5,),
+                            Text("Devices :",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                            SizedBox(width: 69,),
+                            FilledButton.icon(
+                              onPressed: (){
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context)=>AddDevicePage(
+                                      zoneNames: zoneNames
+                                    )));
+
+                              },
+                              style: ElevatedButton.styleFrom(
+                                elevation: 3,
+
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15), // Adjust border radius as needed
+                                ),
+                              ),
+
+                              label: Text("Add Device"),
+                              icon: Icon(Icons.add),
+                            )
+
+                          ],
+                        ),
+                        SizedBox(height: 5,),
+                        Expanded(
+                          child:ListView.builder(
+                              itemCount: filteredZones.length,
+                              itemBuilder: (context, index){
+
+                                return Card(
+                                  elevation: 3,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(Icons.location_on),
+                                            SizedBox(width: 5,),
+                                            Text(filteredZones[index]["zone_name"]),
+                                          ],
+                                        ),
+                                        SizedBox(height: 5,),
+
+                                        Container(
+                                          child: ListView.builder(
+                                              shrinkWrap: true,
+                                              physics: NeverScrollableScrollPhysics(),
+                                              itemCount: filteredDevices[index].length,
+                                              itemBuilder: (context1, index1){
+
+
+                                                return (
+                                                    Card(
+                                                      child: Container(
+                                                        height: 88,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.all(8.0),
+                                                          child: Column(
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  Icon(Icons.smartphone),
+                                                                  SizedBox(width: 5,),
+                                                                  Text(filteredDevices[index][index1]["device_name"].toString()),
+
+
+                                                                ],
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  SizedBox(width: 175,),
+                                                                  IconButton(
+                                                                      onPressed: (){
+                                                                        showDialog(context: context, builder: (BuildContext context){
+                                                                          return(
+                                                                              AlertDialog(
+                                                                                title: Text('Delete ${filteredDevices[index][index1]["device_name"]}'),
+                                                                                content: Text('Are you sure you want to delete "${filteredDevices[index][index1]["device_name"]}"?'),
+                                                                                actions: [
+                                                                                  TextButton(
+                                                                                    onPressed: () {
+                                                                                      Navigator.of(context).pop(); // Close the dialog
+                                                                                    },
+                                                                                    child: Text('Cancel'),
+                                                                                  ),
+                                                                                  TextButton(
+                                                                                    style: ButtonStyle(
+                                                                                      overlayColor: MaterialStateProperty.all<Color>(Colors.red.withOpacity(0.2)), // Adjust opacity level as needed
+
+                                                                                    ),
+
+                                                                                    onPressed: () {
+                                                                                    },
+                                                                                    child: Text('Delete',style: TextStyle(color: Colors.red),),
+                                                                                  ),
+                                                                                ],
+                                                                              ));
+                                                                        });
+
+                                                                      },
+                                                                      icon: Icon(Icons.delete,color: Colors.red,)),
+                                                                  IconButton(onPressed: (){}, icon: Icon(Icons.remove_red_eye))
+
+                                                                ],
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ));
+                                              }),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }
+                          )
+                          ,
+                        ),
+
+
+                      ],
+                    ),
+                  )
+                  );
+                });
+              },
+              icon: Icon(Icons.smartphone)),
         ],
       ),
       body: Padding(
@@ -293,123 +680,170 @@ class _ViewStationPageState extends State<ViewStationPage> {
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(12),
-                  child: Column(
+                  child: Stack(
                     children: [
-                      Row(
+                      Column(
                         children: [
-                          Icon(Icons.history,size: 30,),
-                          SizedBox(width: 10,),
-                          Text(
-                              "Station Energy History",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18
-                          ),)
-                        ],
-                      ),
-                      SizedBox(height: 20,),
-                      if (n>1)
-                        AspectRatio(
-                          aspectRatio: 2.0,
-                          child: PieChart(
-                            PieChartData(
-                              startDegreeOffset: 0,
-                              sectionsSpace: 0,
-                              sections: sections,
-                              borderData: FlBorderData(show: false),
-                              centerSpaceRadius: 0,
-                            ),
-                            swapAnimationDuration: Duration(milliseconds: 800),
-                            swapAnimationCurve: Curves.easeInOutBack,
+                          Row(
+                            children: [
+                              Icon(Icons.history,size: 30,),
+                              SizedBox(width: 10,),
+                              Text(
+                                  "Station Energy History",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18
+                              ),)
+                            ],
                           ),
-                        ),
-                      if (n>1)
-                        SizedBox(height: 20,),
-                      if (n>1)
-                        Container(
-                          height: 180,
-                          child: ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (context,index){
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                          SizedBox(height: 20,),
+                          if (n>1)
+                            AspectRatio(
+                              aspectRatio: 2.0,
+                              child: PieChart(
+                                PieChartData(
+                                  startDegreeOffset: 0,
+                                  sectionsSpace: 0,
+                                  sections: List.generate(n, (index) {
+                                    final  integers = generateIntegersWithSum(n, sum);
+                                    print(integers);
+                                    return PieChartSectionData(
+                                      color: randomColors[index],
+                                      value: integers[index].toDouble(),
+                                      title: '${integers[index]}%', // Display the integer value as the title
+                                      radius: 90, // Adjust as needed
+                                      titleStyle: TextStyle(color: Colors.white),
+                                    );
+                                  }),
+                                  borderData: FlBorderData(show: false),
+                                  centerSpaceRadius: 0,
+                                ),
+                                swapAnimationDuration: Duration(milliseconds: 800),
+                                swapAnimationCurve: Curves.easeInOutBack,
+                              ),
+                            ),
+                          if (n>1)
+                            SizedBox(height: 20,),
+                          if (n>1)
+                            Container(
+                              height: 180,
+                              child: ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (context,index){
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        width: 15, // Adjust size as needed
-                                        height: 15, // Adjust size as needed
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: randomColors[index],
-                                        ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            width: 15, // Adjust size as needed
+                                            height: 15, // Adjust size as needed
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: randomColors[index],
+                                            ),
+                                          ),
+                                          SizedBox(width: 20),
+                                          Text(filteredZones[index]["zone_name"])
+                                        ],
                                       ),
-                                      SizedBox(width: 20),
-                                      Text(filteredZones[index]["zone_name"])
+                                      SizedBox(height: 10),
+
+                                    ],
+                                  );
+                                },
+                                itemCount: n,
+
+                              ),
+                            ),
+
+                          Container(
+                            height: 270,
+                            child: BarChart(
+
+                              BarChartData(
+
+                                gridData: FlGridData(
+                                  show: true,
+                                  drawVerticalLine: false, // Set to false to hide vertical grid lines
+                                ),
+                                maxY: 14,
+                                // Bar groups data
+                                groupsSpace: 12,
+                                barTouchData: BarTouchData(
+                                  enabled: true, // Disable touch interaction
+                                ),
+                                titlesData: FlTitlesData(
+
+                                  // Titles on x-axis and y-axis
+
+
+                                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                ),
+
+                                borderData: FlBorderData(
+                                  border: Border.all(color: Colors.black, width: 0),
+                                ),
+                                barGroups: barData
+                                    .asMap()
+                                    .map((index, value) => MapEntry(
+                                  index,
+                                  BarChartGroupData(
+                                    x: index,
+                                    barRods: [
+                                      BarChartRodData(
+                                          color: Colors.deepPurple,
+                                          fromY: 0, toY: value,
+                                          width: 12,
+                                          borderRadius: BorderRadius.circular(4)
+                                        // Bar color
+                                      ),
                                     ],
                                   ),
-                                  SizedBox(height: 10),
-
-                                ],
-                              );
-                            },
-                            itemCount: n,
-
-                          ),
-                        ),
-
-                      Container(
-                        height: 270,
-                        child: BarChart(
-                          BarChartData(
-                            gridData: FlGridData(
-                              show: true,
-                              drawVerticalLine: false, // Set to false to hide vertical grid lines
-                            ),
-                            maxY: 14,
-                            // Bar groups data
-                            groupsSpace: 12,
-                            barTouchData: BarTouchData(
-                              enabled: true, // Disable touch interaction
-                            ),
-                            titlesData: FlTitlesData(
-                              // Titles on x-axis and y-axis
-
-
-                              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                            ),
-                            borderData: FlBorderData(
-                              border: Border.all(color: Colors.black, width: 0),
-                            ),
-                            barGroups: barData
-                                .asMap()
-                                .map((index, value) => MapEntry(
-                              index,
-                              BarChartGroupData(
-                                x: index,
-                                barRods: [
-                                  BarChartRodData(
-                                      color: Colors.deepPurple,
-                                      fromY: 0, toY: value,
-                                      width: 12,
-                                      borderRadius: BorderRadius.circular(4)
-                                    // Bar color
-                                  ),
-                                ],
+                                ))
+                                    .values
+                                    .toList(),
                               ),
-                            ))
-                                .values
-                                .toList(),
+                            ),
                           ),
-                        ),
+
+
+
+
+                        ],
                       ),
+                      if(n>1)
+                        Positioned(
+                          top: 520,
+                          left: -69,
+                          child: Transform.rotate(
+                            angle: -90 * 3.1415926535 / 180,
+                            child: Text(
+                              'Imported Energy (kWh)',
+                              style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
+                      else
+                        Positioned(
+                          top: 160,
+                          left: -69,
+                          child: Transform.rotate(
+                            angle: -90 * 3.1415926535 / 180,
+                            child: Text(
+                              'Imported Energy (kWh)',
+                              style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
 
 
 
 
                     ],
+
                   ),
                 ),
           

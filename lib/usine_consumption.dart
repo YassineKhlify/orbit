@@ -32,16 +32,24 @@ class UsineConsumption extends StatefulWidget {
 
 class _UsineConsumptionState extends State<UsineConsumption> with TickerProviderStateMixin{
   late TextEditingController _stationNameController;
+  late TextEditingController _newStationNameController;
+
   File? _image;
+  File? _image1;
+
   @override
   void initState() {
     super.initState();
     _stationNameController = TextEditingController();
+    _newStationNameController = TextEditingController();
+
   }
 
   @override
   void dispose() {
     _stationNameController.dispose();
+    _newStationNameController.dispose();
+
     super.dispose();
   }
 
@@ -57,6 +65,19 @@ class _UsineConsumptionState extends State<UsineConsumption> with TickerProvider
       }
     });
   }
+  Future<void> _chooseImage1() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedImage != null) {
+        _image1 = File(pickedImage.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +175,87 @@ class _UsineConsumptionState extends State<UsineConsumption> with TickerProvider
                     fontSize: 20, // Adjust the font size as needed
                   ),
                 ),
+                SizedBox(width: 60,),
+                SizedBox(
+                  height: 38,
+                  child: FilledButton.icon(
+                    onPressed: (){
+                      showDialog(context: context, builder: (BuildContext context){
+                        return(
+                            AlertDialog(
+                              title: Text('Add new station'),
+                              content: Container(
+                                height: 250,
+                                child: Column(
+                                  children: [
+                                    TextField(
+                                      controller: _stationNameController,
+                                      decoration: InputDecoration(
+                                        labelText: 'Enter Station Name',
+                                      ),
+                                    ),
+                                    SizedBox(height: 16.0),
+                                    _image1 == null
+                                        ? Text('No image selected.')
+                                        : Image.file(
+                                      _image1!,
+                                      height: 100.0,
+                                      width: 100.0,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    SizedBox(height: 16.0),
+                                    ElevatedButton.icon(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 3,
+                                        minimumSize: Size(double.infinity, 0), // Set width to span horizontally
+
+                                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Adjust padding as needed
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(15), // Adjust border radius as needed
+                                        ),
+                                      ),
+
+                                      icon: Icon(Icons.image),
+                                      onPressed: _chooseImage1,
+                                      label: Text('Choose Station Image'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); // Close the dialog
+                                  },
+                                  child: Text('Cancel'),
+                                ),
+                                TextButton.icon(
+                                  icon: Icon(Icons.save),
+
+
+                                  onPressed: () {
+                                  },
+                                  label: Text('Save'),
+                                ),
+                              ],
+                            ));
+                      });
+
+
+                    },
+                    style: ElevatedButton.styleFrom(
+                      elevation: 3,
+
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15), // Adjust border radius as needed
+                      ),
+                    ),
+
+                    label: Text("Add Station"),
+                    icon: Icon(Icons.add),
+                  ),
+                )
+
               ],
             ),
         

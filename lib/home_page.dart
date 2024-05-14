@@ -366,190 +366,191 @@ class _HomePageState extends State<HomePage> {
                               },
                               child: Padding(
                                 padding: EdgeInsets.all(10),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white, // Set the background color to white
-                                    border: Border.all(
-                                      color: Colors.grey[350]!, // Light grey color
+                                child: Card(
+                                  elevation: 3,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white, // Set the background color to white
+                                      border: Border.all(
+                                        color: Colors.grey[350]!, // Light grey color
+                                      ),
+                                      borderRadius: BorderRadius.circular(10.0), // Adjust the radius as needed
                                     ),
-                                    borderRadius: BorderRadius.circular(10.0), // Adjust the radius as needed
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      Padding(padding: EdgeInsets.all(10.0),
-                                        child:  Column(
-                                          children: [
-                                            SizedBox(height: 5,),
-                                            Text(
-                                              "${usines[index]["usine_name"]}",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 17, // Adjust the font size as needed
+                                    child: Stack(
+                                      children: [
+                                        Padding(padding: EdgeInsets.all(10.0),
+                                          child:  Column(
+                                            children: [
+                                              SizedBox(height: 5,),
+                                              Text(
+                                                "${usines[index]["usine_name"]}",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 17, // Adjust the font size as needed
+                                                ),
                                               ),
-                                            ),
-                                            SizedBox(height: 15), // Adjust spacing as needed
-                                            Divider(
-                                              height: 1,
-                                              color: Colors.grey[350],
-                                              thickness: 1,
-                                            ),
-                                            SizedBox(height: 10), // Adjust spacing as needed
-                                            SizedBox(
-                                              width: double.infinity,
-                                              height: 150, // Adjust height as needed
-                                              child:  Image.network('https://orbitsmart.energy${usines[index]["usine_image"]}'),
-                                            ),
-                                            SizedBox(height: 15), // Adjust spacing as needed
-                                            SizedBox(height: 10,),
-                                            Stack(
-                                              children: [
-                                                Positioned(
-                                                    top: 5,
-                                                    right: 175,
-                                                    child: Text("/")),
-                                                Row(
-                                                  children: [
+                                              SizedBox(height: 15), // Adjust spacing as needed
+                                              Divider(
+                                                height: 1,
+                                                color: Colors.grey[350],
+                                                thickness: 1,
+                                              ),
+                                              SizedBox(height: 10), // Adjust spacing as needed
+                                              SizedBox(
+                                                width: double.infinity,
+                                                height: 150, // Adjust height as needed
+                                                child:  Image.network('https://orbitsmart.energy${usines[index]["usine_image"]}'),
+                                              ),
+                                              SizedBox(height: 15), // Adjust spacing as needed
+                                              SizedBox(height: 10,),
+                                              Stack(
+                                                children: [
+                                                  Positioned(
+                                                      top: 5,
+                                                      right: 175,
+                                                      child: Text("/")),
+                                                  Row(
+                                                    children: [
 
-                                                    SizedBox(width: 10,),
-                                                    Icon(
-                                                      Icons.bolt,
-                                                      color: Colors.green,
-                                                    ),
-                                                    SizedBox(width: 10,),
-                                                    Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      SizedBox(width: 10,),
+                                                      Icon(
+                                                        Icons.bolt,
+                                                        color: Colors.green,
+                                                      ),
+                                                      SizedBox(width: 10,),
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
 
-                                                      children: [
-
-
-                                                        Text("Active Energy",style: TextStyle(fontWeight: FontWeight.bold)),
-                                                        Text("Month", style: TextStyle(fontSize: 14),),
-                                                      ],
-                                                    ),
-                                                    SizedBox(width: 60,),
-                                                    Column(
-                                                      children: [
-
-                                                        Icon(
-                                                          Icons.arrow_upward,
-                                                          color: Colors.green,
-                                                          size: 20,
-                                                        ),
-                                                        Icon(
-                                                          Icons.arrow_downward,
-                                                          color: Colors.red,
-                                                          size: 20,
-                                                        ),
+                                                        children: [
 
 
-                                                      ],
-                                                    ),
-                                                    SizedBox(width: 5,),
-                                                    Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                          Text("Active Energy",style: TextStyle(fontWeight: FontWeight.bold)),
+                                                          Text("Month", style: TextStyle(fontSize: 14),),
+                                                        ],
+                                                      ),
+                                                      SizedBox(width: 60,),
+                                                      Column(
+                                                        children: [
 
-                                                      children: [
-                                                        Text("132035.0 kWh",style: TextStyle(fontSize: 13),),
-                                                        SizedBox(height: 2,),
-                                                        Text("3589.0 kWh",style: TextStyle(fontSize: 13),),
+                                                          Icon(
+                                                            Icons.arrow_upward,
+                                                            color: Colors.green,
+                                                            size: 20,
+                                                          ),
+                                                          Icon(
+                                                            Icons.arrow_downward,
+                                                            color: Colors.red,
+                                                            size: 20,
+                                                          ),
 
 
-                                                      ],
-                                                    )
+                                                        ],
+                                                      ),
+                                                      SizedBox(width: 5,),
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
 
+                                                        children: [
+                                                          Text("132035.0 kWh",style: TextStyle(fontSize: 13),),
+                                                          SizedBox(height: 2,),
+                                                          Text("3589.0 kWh",style: TextStyle(fontSize: 13),),
+
+
+                                                        ],
+                                                      )
 
 
 
 
-                                                  ],
-                                                )
 
-                                              ],
-                                            ),
-                                            SizedBox(height: 20,),
-                                            Stack(
-                                              children: [
-                                                Positioned(
-                                                    top: 5,
-                                                    right: 160,
-                                                    child: Text("/")),
-                                                Row(
-                                                  children: [
+                                                    ],
+                                                  )
 
-                                                    SizedBox(width: 10,),
-                                                    Icon(
-                                                      Icons.bolt,
-                                                      color: Colors.blue,
-                                                    ),
-                                                    SizedBox(width: 10,),
-                                                    Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                ],
+                                              ),
+                                              SizedBox(height: 20,),
+                                              Stack(
+                                                children: [
+                                                  Positioned(
+                                                      top: 5,
+                                                      right: 160,
+                                                      child: Text("/")),
+                                                  Row(
+                                                    children: [
 
-                                                      children: [
+                                                      SizedBox(width: 10,),
+                                                      Icon(
+                                                        Icons.bolt,
+                                                        color: Colors.blue,
+                                                      ),
+                                                      SizedBox(width: 10,),
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
 
-
-                                                        Text("Reactive Energy",style: TextStyle(fontWeight: FontWeight.bold)),
-                                                        Text("Month", style: TextStyle(fontSize: 14),),
+                                                        children: [
 
 
-                                                      ],
-                                                    ),
-                                                    SizedBox(width: 45,),
-                                                    Icon(
-                                                      Icons.arrow_downward,
-                                                      color: Colors.red,
-                                                      size: 20,
-                                                    ),
-                                                    SizedBox(width: 5,),
-                                                    Text("2035.0 kWh",style: TextStyle(fontSize: 13),),
+                                                          Text("Reactive Energy",style: TextStyle(fontWeight: FontWeight.bold)),
+                                                          Text("Month", style: TextStyle(fontSize: 14),),
+
+
+                                                        ],
+                                                      ),
+                                                      SizedBox(width: 45,),
+                                                      Icon(
+                                                        Icons.arrow_downward,
+                                                        color: Colors.red,
+                                                        size: 20,
+                                                      ),
+                                                      SizedBox(width: 5,),
+                                                      Text("2035.0 kWh",style: TextStyle(fontSize: 13),),
 
 
 
 
-                                                  ],
-                                                )
+                                                    ],
+                                                  )
 
-                                              ],
-                                            ),
-                                            SizedBox(height: 20,),
-                                            Stack(
-                                              children: [
-                                                Positioned(
-                                                    top: 5,
-                                                    right: 242,
-                                                    child: Text("/")),
-                                                Row(
-                                                  children: [
+                                                ],
+                                              ),
+                                              SizedBox(height: 20,),
+                                              Stack(
+                                                children: [
+                                                  Positioned(
+                                                      top: 5,
+                                                      right: 242,
+                                                      child: Text("/")),
+                                                  Row(
+                                                    children: [
 
-                                                    SizedBox(width: 10,),
+                                                      SizedBox(width: 10,),
 
-                                                    Icon(
-                                                      Icons.local_fire_department,
-                                                      color: Colors.orange,
-                                                    ),
-                                                    SizedBox(width: 10,),
-                                                    Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      Icon(
+                                                        Icons.local_fire_department,
+                                                        color: Colors.orange,
+                                                      ),
+                                                      SizedBox(width: 10,),
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
 
-                                                      children: [
-
-
-                                                        Text("Gas",style: TextStyle(fontWeight: FontWeight.bold)),
-                                                        Text("Month", style: TextStyle(fontSize: 14),),
-                                                      ],
-                                                    ),
-                                                    SizedBox(width: 113,),
-                                                    Text("25533.00 Nm3",style: TextStyle(fontSize: 13),),
+                                                        children: [
 
 
-                                                  ],
-                                                )
+                                                          Text("Gas",style: TextStyle(fontWeight: FontWeight.bold)),
+                                                          Text("Month", style: TextStyle(fontSize: 14),),
+                                                        ],
+                                                      ),
+                                                      SizedBox(width: 113,),
+                                                      Text("25533.00 Nm3",style: TextStyle(fontSize: 13),),
 
-                                              ],
-                                            ),
-                                            SizedBox(height: 20,),
 
+                                                    ],
+                                                  )
+
+                                                ],
+                                              ),
+                                              SizedBox(height: 20,),
 
 
 
@@ -558,23 +559,25 @@ class _HomePageState extends State<HomePage> {
 
 
 
-                                          ],
+
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      Positioned(
-                                          right: 10,
-                                          top: 3,
-                                          child: IconButton(
-                                            icon: Icon(Icons.settings),
-                                            iconSize: 20,
-                                            onPressed: () {
-                                              // Add your onPressed functionality here
-                                              // This function will be called when the button is pressed
-                                              print('Settings button pressed');
-                                            },
-                                          )
-                                      ),
-                                    ],
+                                        Positioned(
+                                            right: 10,
+                                            top: 3,
+                                            child: IconButton(
+                                              icon: Icon(Icons.settings),
+                                              iconSize: 20,
+                                              onPressed: () {
+                                                // Add your onPressed functionality here
+                                                // This function will be called when the button is pressed
+                                                print('Settings button pressed');
+                                              },
+                                            )
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

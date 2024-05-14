@@ -42,7 +42,7 @@ class LoginApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //_notificationListener.startListening();
+    _notificationListener.startListening();
 
     return MaterialApp(
       title: 'Login Page',

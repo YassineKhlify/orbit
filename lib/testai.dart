@@ -508,20 +508,7 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                 },
           
               ),
-              Text(
-                'Prediction:',
-                style: TextStyle(fontSize: 20),
-              ),
-              SizedBox(height: 10),
-              Text(
-                _prediction,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _sendPredictionRequest,
-                child: Text('Get Prediction'),
-              ),
+
             ],
           ),
         ),

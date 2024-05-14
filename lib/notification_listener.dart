@@ -19,6 +19,8 @@ class NotificationListener {
   }
 
   void startListening() {
+    print("heyyy nots");
+    showNotification("Moteur Pates", "Electrique Pates", "Power Factor", -0.99);
     Timer.periodic(Duration(seconds: 1), (timer) {
       fetchData();
     });
