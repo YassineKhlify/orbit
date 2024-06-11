@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
     final MyNotification.NotificationListener _notificationListener = MyNotification.NotificationListener(
         id: widget.id
     );
-    //_notificationListener.startListening();
+    _notificationListener.startListening();
 
     return Scaffold(
       appBar: AppBar(
