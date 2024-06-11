@@ -84,6 +84,8 @@ class _UsineConsumptionState extends State<UsineConsumption> with TickerProvider
     final userData = widget.data;
     // Extract station data
     final stationsData = userData['station'];
+    final List<String> bottomTitles = ['28-4', '5-11', '12-18', '19-25', '25-27'];
+
 
     // Initialize a list to store filtered stations
     List<dynamic> filteredStations = [];
@@ -106,7 +108,20 @@ class _UsineConsumptionState extends State<UsineConsumption> with TickerProvider
 
     // Iterate over station data
 
-    final List<double> data = [5, 8, 10, 12, 6];
+    final List<double> data = [8.3,12.1, 5.9, 8, 2.9];
+    final List<double> dataE = [22.5,12.1, 35.9, 8, 17.3];
+    final List<double> dataG = [5.3,5.1, 5.9, 5.2, 4.9];
+
+
+
+
+
+    final List<double> maxI =[1703.00,5421.00];
+    final List<double> minI =[0,1204.23];
+    final List<double> avgI =[503.11,2050.23];
+    final List<double> totI =[5879.11,10024.23];
+
+
 
 
     TabController _tabController = TabController(length: 3, vsync: this);
@@ -135,10 +150,7 @@ class _UsineConsumptionState extends State<UsineConsumption> with TickerProvider
     }
 
 // Generate bottom titles using the dates
-    List<String> bottomTitles = [];
-    for (DateTime date in dates) {
-      bottomTitles.add('${date.day}');
-    }
+
 
 // Create bottom titles for each week
     List<String> weekBottomTitles = [];
@@ -430,7 +442,7 @@ class _UsineConsumptionState extends State<UsineConsumption> with TickerProvider
                                       ),),
                                     SizedBox(width: 65,),
                                     Text(currentMonth),
-                                    SizedBox(width: 20,),
+                                    SizedBox(width: 10,),
                                     Text("473656.00 Nm3",style: TextStyle(fontSize: 13),),
         
         
@@ -629,87 +641,388 @@ class _UsineConsumptionState extends State<UsineConsumption> with TickerProvider
               ),
             ),
             Container(
-              height: 500,
+              height: 700,
               child: TabBarView(
                 controller: _tabController,
                 children: [
                   Padding(
                     padding: EdgeInsets.all(5),
-                    child:  Column(
+                    child:  Stack(
                       children: [
-                        SizedBox(height: 20,),
-                        Container(
-                          height: 270,
-                          child: BarChart(
-                            BarChartData(
-                              gridData: FlGridData(
-                                show: true,
-                                drawVerticalLine: false, // Set to false to hide vertical grid lines
-                              ),
-                              maxY: 14,
-                              // Bar groups data
-                              groupsSpace: 12,
-                              barTouchData: BarTouchData(
-                                enabled: true, // Disable touch interaction
-                              ),
-                              titlesData: FlTitlesData(
-                                // Titles on x-axis and y-axis
-        
-        
-                                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                              ),
-                              borderData: FlBorderData(
-                                border: Border.all(color: Colors.black, width: 0),
-                              ),
-                              barGroups: data
-                                  .asMap()
-                                  .map((index, value) => MapEntry(
-                                index,
-                                BarChartGroupData(
-                                  x: index,
-                                  barRods: [
-                                    BarChartRodData(
-                                        color: Colors.deepPurple,
-                                        fromY: 0, toY: value,
-                                        width: 12,
-                                        borderRadius: BorderRadius.circular(4)
-                                      // Bar color
+                        Column(
+                          children: [
+                            SizedBox(height: 20,),
+                            Container(
+                              height: 270,
+                              child: BarChart(
+                                BarChartData(
+                                  gridData: FlGridData(
+                                    show: true,
+                                    drawVerticalLine: false, // Set to false to hide vertical grid lines
+                                  ),
+                                  maxY: 14,
+                                  // Bar groups data
+                                  groupsSpace: 12,
+                                  barTouchData: BarTouchData(
+                                    enabled: true, // Disable touch interaction
+                                  ),
+                                  titlesData: FlTitlesData(
+                                    // Titles on x-axis and y-axis
+                                    bottomTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: true,
+                                        getTitlesWidget: (double value, TitleMeta meta){
+                                          int index = value.toInt();
+                                          // Ensure the index is within the bounds of the bottomTitles list
+                                          if (index < 0 || index >= bottomTitles.length) {
+                                            return Text('');
+                                          }
+                                          return Text(bottomTitles[index].toString());
+                                        }
+                                      )
                                     ),
-                                  ],
+
+
+                                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                  ),
+                                  borderData: FlBorderData(
+                                    border: Border.all(color: Colors.black, width: 0),
+                                  ),
+                                  barGroups: data
+                                      .asMap()
+                                      .map((index, value) => MapEntry(
+                                    index,
+                                    BarChartGroupData(
+                                      x: index,
+                                      barRods: [
+                                        BarChartRodData(
+                                            color: Colors.deepPurple,
+                                            fromY: 0, toY: value,
+                                            width: 12,
+                                            borderRadius: BorderRadius.circular(4)
+                                          // Bar color
+                                        ),
+                                      ],
+                                    ),
+                                  ))
+                                      .values
+                                      .toList(),
                                 ),
-                              ))
-                                  .values
-                                  .toList(),
+                              ),
+                            ),
+                            Expanded(
+                              child: ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: filteredStations.length,
+                                  itemBuilder: (context,index){
+                                return (
+                                Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(Icons.business_rounded),
+                                            SizedBox(width: 5,),
+                                            Text(filteredStations[index]["station_name"])
+                                          ],
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(3),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text("Min (kWh) : ${minI[index]}"),
+                                              Text("Max (kWh) : ${maxI[index]}"),
+                                              Text("Average (kWh) : ${avgI[index]}"),
+                                              Text("Total (kWh) : ${totI[index]}"),
+
+
+
+
+
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                )
+                                );
+                              }),
+                            ),
+                          ],
+                        ),
+                        Positioned(
+                          bottom: 520,
+                          left: -105,
+                          child: Transform.rotate(
+                            angle: -90 * 3.1415926535 / 180,
+                            child: Text(
+                              'Imported Energy (kWh) - May 2024',
+                              style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),
                             ),
                           ),
-                        ),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: DataTable(
-                            horizontalMargin: 10,
-                            columns: [
-                              DataColumn(label: Text('Station')),
-                              DataColumn(label: Text('Min (kWh)')),
-                              DataColumn(label: Text('Max (kWh)')),
-                              DataColumn(label: Text('Average (kWh)')),
-                              DataColumn(label: Text('Total (kWh)')),
-                            ],
-                            rows: _stations.map((station) => DataRow(cells: [
-                              DataCell(Text(station.name)),
-                              DataCell(Text(station.min.toStringAsFixed(2))),
-                              DataCell(Text(station.max.toStringAsFixed(2))),
-                              DataCell(Text(station.average.toStringAsFixed(2))),
-                              DataCell(Text(station.total.toStringAsFixed(2))),
-                            ])).toList(),
-                          ),
                         )
+
                       ],
                     ),
                   ),
-                  Text("data"),
-                  Text("yass")
-        
+                  Padding(
+                    padding: EdgeInsets.all(5),
+                    child:  Stack(
+                      children: [
+                        Column(
+                          children: [
+                            SizedBox(height: 20,),
+                            Container(
+                              height: 270,
+                              child: BarChart(
+                                BarChartData(
+                                  gridData: FlGridData(
+                                    show: true,
+                                    drawVerticalLine: false, // Set to false to hide vertical grid lines
+                                  ),
+                                  maxY: 40,
+                                  // Bar groups data
+                                  groupsSpace: 12,
+                                  barTouchData: BarTouchData(
+                                    enabled: true, // Disable touch interaction
+                                  ),
+                                  titlesData: FlTitlesData(
+                                    // Titles on x-axis and y-axis
+                                    bottomTitles: AxisTitles(
+                                        sideTitles: SideTitles(
+                                            showTitles: true,
+                                            getTitlesWidget: (double value, TitleMeta meta){
+                                              int index = value.toInt();
+                                              // Ensure the index is within the bounds of the bottomTitles list
+                                              if (index < 0 || index >= bottomTitles.length) {
+                                                return Text('');
+                                              }
+                                              return Text(bottomTitles[index].toString());
+                                            }
+                                        )
+                                    ),
+
+
+                                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                  ),
+                                  borderData: FlBorderData(
+                                    border: Border.all(color: Colors.black, width: 0),
+                                  ),
+                                  barGroups: dataE
+                                      .asMap()
+                                      .map((index, value) => MapEntry(
+                                    index,
+                                    BarChartGroupData(
+                                      x: index,
+                                      barRods: [
+                                        BarChartRodData(
+                                            color: Colors.deepPurple,
+                                            fromY: 0, toY: value,
+                                            width: 12,
+                                            borderRadius: BorderRadius.circular(4)
+                                          // Bar color
+                                        ),
+                                      ],
+                                    ),
+                                  ))
+                                      .values
+                                      .toList(),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: filteredStations.length,
+                                  itemBuilder: (context,index){
+                                    return (
+                                        Card(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(Icons.business_rounded),
+                                                    SizedBox(width: 5,),
+                                                    Text(filteredStations[index]["station_name"])
+                                                  ],
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(3),
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text("Min (MWh) : ${minI[index]}"),
+                                                      Text("Max (MWh) : ${maxI[index]}"),
+                                                      Text("Average (MWh) : ${avgI[index]}"),
+                                                      Text("Total (MWh) : ${totI[index]}"),
+
+
+
+
+
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                    );
+                                  }),
+                            ),
+                          ],
+                        ),
+                        Positioned(
+                          bottom: 520,
+                          left: -105,
+                          child: Transform.rotate(
+                            angle: -90 * 3.1415926535 / 180,
+                            child: Text(
+                              'Exported Energy (MWh) - May 2024',
+                              style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
+
+                      ],
+                    ),
+                  ),
+
+
+                  Padding(
+                    padding: EdgeInsets.all(5),
+                    child:  Stack(
+                      children: [
+                        Column(
+                          children: [
+                            SizedBox(height: 20,),
+                            Container(
+                              height: 270,
+                              child: BarChart(
+                                BarChartData(
+                                  gridData: FlGridData(
+                                    show: true,
+                                    drawVerticalLine: false, // Set to false to hide vertical grid lines
+                                  ),
+                                  maxY: 6,
+                                  // Bar groups data
+                                  groupsSpace: 12,
+                                  barTouchData: BarTouchData(
+                                    enabled: true, // Disable touch interaction
+                                  ),
+                                  titlesData: FlTitlesData(
+                                    // Titles on x-axis and y-axis
+                                    bottomTitles: AxisTitles(
+                                        sideTitles: SideTitles(
+                                            showTitles: true,
+                                            getTitlesWidget: (double value, TitleMeta meta){
+                                              int index = value.toInt();
+                                              // Ensure the index is within the bounds of the bottomTitles list
+                                              if (index < 0 || index >= bottomTitles.length) {
+                                                return Text('');
+                                              }
+                                              return Text(bottomTitles[index].toString());
+                                            }
+                                        )
+                                    ),
+
+
+                                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                  ),
+                                  borderData: FlBorderData(
+                                    border: Border.all(color: Colors.black, width: 0),
+                                  ),
+                                  barGroups: dataG
+                                      .asMap()
+                                      .map((index, value) => MapEntry(
+                                    index,
+                                    BarChartGroupData(
+                                      x: index,
+                                      barRods: [
+                                        BarChartRodData(
+                                            color: Colors.deepPurple,
+                                            fromY: 0, toY: value,
+                                            width: 12,
+                                            borderRadius: BorderRadius.circular(4)
+                                          // Bar color
+                                        ),
+                                      ],
+                                    ),
+                                  ))
+                                      .values
+                                      .toList(),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: filteredStations.length,
+                                  itemBuilder: (context,index){
+                                    return (
+                                        Card(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(Icons.business_rounded),
+                                                    SizedBox(width: 5,),
+                                                    Text(filteredStations[index]["station_name"])
+                                                  ],
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(3),
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text("Min (nm3) : ${minI[index]}"),
+                                                      Text("Max (nm3) : ${maxI[index]}"),
+                                                      Text("Average (nm3) : ${avgI[index]}"),
+                                                      Text("Total (nm3) : ${totI[index]}"),
+
+
+
+
+
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                    );
+                                  }),
+                            ),
+                          ],
+                        ),
+                        Positioned(
+                          bottom: 520,
+                          left: -65,
+                          child: Transform.rotate(
+                            angle: -90 * 3.1415926535 / 180,
+                            child: Text(
+                              'Gas (NM3) - May 2024',
+                              style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
+
+                      ],
+                    ),
+                  ),
+
         
         
                 ],

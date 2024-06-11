@@ -51,7 +51,7 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
 
 
   Future<void> _sendPredictionRequest() async {
-    var url = Uri.parse('http://192.168.1.195:5000/predict');
+    var url = Uri.parse('http://192.168.1.147:5000/predict');
     var data = jsonEncode({
       'parameter': params,
       'day_of_week': dayOfWeek,
@@ -126,7 +126,7 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                 controller: _controller,
                 onOptionSelected: (options) {
                   setState(() {
-          
+
                   });
                 },
                 options:  deviceTypeItems,
@@ -175,7 +175,7 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                 ),
               ),
               SizedBox(height: 5,),
-          
+
               MultiSelectDropDown(
                 showClearIcon: true,
                 controller: _controller,
@@ -191,7 +191,7 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                 selectedOptionIcon: const Icon(Icons.check_circle),
               ),
               SizedBox(height: 10,),
-          
+
               Text(
                 "Select Stations:",
                 style: TextStyle(
@@ -204,7 +204,7 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                 controller: _controller,
                 onOptionSelected: (options) {
                   print(options);
-          
+
                 },
                 options: stationItems,
                 selectionType: SelectionType.multi,
@@ -213,10 +213,10 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                 optionTextStyle: const TextStyle(fontSize: 16),
                 selectedOptionIcon: const Icon(Icons.check_circle),
               ),
-          
-          
-          
-          
+
+
+
+
               SizedBox(height: 10,),
               Text(
                 "Select Zones:",
@@ -240,7 +240,7 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                 selectedOptionIcon: const Icon(Icons.check_circle),
               ),
               SizedBox(height: 10,),
-          
+
               Text(
                 "Select Devices:",
                 style: TextStyle(
@@ -263,28 +263,28 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                 selectedOptionIcon: const Icon(Icons.check_circle),
               ),
               SizedBox(height: 10,),
-          
-          
+
+
               SizedBox(height: 10,),
-          
-          
-          
+
+
+
               Text(""),
-          
+
               FilledButton.icon(
                 icon: Icon(Icons.arrow_circle_right),
                 label:Text('Next') ,
                 style: ElevatedButton.styleFrom(
                   elevation: 3,
                   minimumSize: Size(double.infinity, 0), // Set width to span horizontally
-          
+
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Adjust padding as needed
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15), // Adjust border radius as needed
                   ),
                 ),
-          
-          
+
+
                 onPressed: () {
                   print(params);
                   showModalBottomSheet(
@@ -297,7 +297,7 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                                 child: Container(
                                   width: double.infinity,
                                   // Set width to span entire screen
-          
+
                                   height: 310,
                                   child: Column(
                                     children: [
@@ -328,14 +328,14 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                                             firstDate: DateTime(2000),
                                             lastDate: DateTime(3000),
                                           );
-          
+
                                           if (selectedDate != null) {
                                             // Show time picker
                                             final TimeOfDay? selectedTime = await showTimePicker(
                                               context: context,
                                               initialTime: TimeOfDay.now(),
                                             );
-          
+
                                             if (selectedTime != null) {
                                               // Combine date and time
                                               DateTime selectedDateTime = DateTime(
@@ -345,11 +345,11 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                                                 selectedTime.hour,
                                                 selectedTime.minute,
                                               );
-          
+
                                               // Format the combined date and time
-          
-          
-          
+
+
+
                                               print("selec");
                                               print(selectedDateTime);
                                               selectedBeginDate1=selectedDateTime;
@@ -361,13 +361,13 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                                             }
                                           }
                                         },
-          
+
                                         icon: Icon(Icons.date_range), // Icon
                                         label: Text('$beginDateText'), // Text
                                         style: ElevatedButton.styleFrom(
                                           elevation: 3,
                                           minimumSize: Size(double.infinity, 0), // Set width to span horizontally
-          
+
                                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Adjust padding as needed
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(10), // Adjust border radius as needed
@@ -391,14 +391,14 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                                             firstDate: DateTime(2000),
                                             lastDate: DateTime(3000),
                                           );
-          
+
                                           if (selectedDate != null) {
                                             // Show time picker
                                             final TimeOfDay? selectedTime = await showTimePicker(
                                               context: context,
                                               initialTime: TimeOfDay.now(),
                                             );
-          
+
                                             if (selectedTime != null) {
                                               // Combine date and time
                                               DateTime selectedDateTime = DateTime(
@@ -409,23 +409,23 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                                                 selectedTime.minute,
                                               );
                                               selectedEndDate2=selectedDateTime;
-          
+
                                               // Format the combined date and time
-          
+
                                               setState(() {
                                                 endDateText = "${selectedDate.day} / ${selectedDate.month} / ${selectedDate.year} ${selectedTime.format(context)}"; // Display date and time in your desired format
                                               });
                                             }
                                           }
                                         },
-          
+
                                         icon: Icon(Icons.date_range), // Icon
                                         label: Text('$endDateText'),
           // Text
                                         style: ElevatedButton.styleFrom(
                                           elevation: 3,
                                           minimumSize: Size(double.infinity, 0), // Set width to span horizontally
-          
+
                                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Adjust padding as needed
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(10), // Adjust border radius as needed
@@ -468,7 +468,7 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                                               print('minute_of_hour: $minuteOfHour');
                                               print('month: $month');
                                               print('is_weekend: $isWeekend');
-                                              await _sendPredictionRequest();
+                                              _sendPredictionRequest();
                                               print(_prediction);
                                               Navigator.push(context, MaterialPageRoute(builder: (context)=>PredictionsPage(
                                                 predictions: _prediction,
@@ -482,31 +482,31 @@ class _TimeSeriesPredictionPageState extends State<TimeSeriesPredictionPage> {
                                             label: Text("Submit"),
                                             style: ElevatedButton.styleFrom(
                                               elevation: 3,
-          
+
                                               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Adjust padding as needed
                                               shape: RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.circular(15), // Adjust border radius as needed
                                               ),
                                             ),
-          
-          
+
+
                                           )
                                         ],
                                       )
-          
+
                                     ],
                                   ),
                                 ),
                               );
-          
+
                             });
-          
-          
+
+
                       });
                   // Handle submit action
                   // You can access selectedDeviceType, selectedUsine, selectedStation, selectedZone, and selectedDate here
                 },
-          
+
               ),
 
             ],

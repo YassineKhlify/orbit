@@ -144,18 +144,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
                       ),
                     ),
                     SizedBox(height: 15,),
-              
-              
-                    TextField(
-                      controller: _zoneNameController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-              
-              
-                        labelText: 'Enter Device Name',
-                      ),
-                    ),
-                    SizedBox(height: 15,),
+                    
                     TextField(
                       controller: _zoneNameController,
                       decoration: InputDecoration(

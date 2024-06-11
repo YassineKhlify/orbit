@@ -1,22 +1,29 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:orbit/add_device.dart';
 import 'package:orbit/login_page.dart';
 import 'package:orbit/testai.dart';
 import 'package:orbit/usine_details.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'dart:io';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'add_usine.dart';
 import 'analytics_page.dart';
+import 'notification_listener.dart' as MyNotification;
 
 class HomePage extends StatefulWidget {
   final String id;
   final String userName;
+
   HomePage({required this.id,required this.userName});
+
 
 
   @override
@@ -24,8 +31,39 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late TextEditingController _newUsineNameController;
+
+  File? _image1;
+
+
+
+
+  Future<void> _chooseImage1() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedImage != null) {
+        _image1 = File(pickedImage.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
+    late GoogleMapController _mapController;
+    LatLng? _selectedLocation;
+    Set<Marker> _markers = {};
+    final MyNotification.NotificationListener _notificationListener = MyNotification.NotificationListener(
+        id: widget.id
+    );
+    //_notificationListener.startListening();
+
     return Scaffold(
       appBar: AppBar(
         leading: Builder(
@@ -100,18 +138,7 @@ class _HomePageState extends State<HomePage> {
 
               },
               label: Text("Bill Simulation"), icon: Icon(Icons.monetization_on),),
-            SizedBox(height: 10,),
-            FilledButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue, elevation: 3,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0), // Adjust border radius as needed
-                ),// Set the accent color
-              ),
-              onPressed: (){
 
-              },
-              label: Text("Reports"), icon: Icon(Icons.file_copy),),
             SizedBox(height: 10,),
             FilledButton.icon(
               style: ElevatedButton.styleFrom(
@@ -125,7 +152,7 @@ class _HomePageState extends State<HomePage> {
 
               },
               label: Text("Predict Future Consumption"), icon: Icon(Icons.online_prediction),),
-            SizedBox(height: 230,),
+            SizedBox(height: 270,),
             FilledButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue, elevation: 3,
@@ -194,7 +221,8 @@ class _HomePageState extends State<HomePage> {
               height: 40, // Adjust height as needed
               child: FilledButton.icon(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddUsinePage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) =>AddUsinePage()));
+
                   // Add your onPressed logic here
                   print('Button pressed');
                 },
@@ -567,15 +595,161 @@ class _HomePageState extends State<HomePage> {
                                             right: 10,
                                             top: 3,
                                             child: IconButton(
-                                              icon: Icon(Icons.settings),
+                                              icon: Icon(Icons.edit),
                                               iconSize: 20,
                                               onPressed: () {
+                                                showDialog(context: context, builder: (BuildContext context){
+                                                  return(
+                                                      AlertDialog(
+                                                        title: Text('Edit ${usines[index]["usine_name"]}'),
+                                                        content: Container(
+                                                          height: 500,
+                                                          child: Column(
+                                                            children: [
+                                                              TextField(
+                                                                controller: _newUsineNameController,
+                                                                decoration: InputDecoration(
+                                                                  labelText: 'Enter Usine Name',
+                                                                ),
+                                                              ),
+                                                              SizedBox(height: 16.0),
+                                                              _image1 == null
+                                                                  ? Text('No image selected.')
+                                                                  : Image.file(
+                                                                _image1!,
+                                                                height: 100.0,
+                                                                width: 100.0,
+                                                                fit: BoxFit.cover,
+                                                              ),
+                                                              SizedBox(height: 16.0),
+                                                              ElevatedButton.icon(
+                                                                style: ElevatedButton.styleFrom(
+                                                                  elevation: 3,
+                                                                  minimumSize: Size(double.infinity, 0), // Set width to span horizontally
+
+                                                                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Adjust padding as needed
+                                                                  shape: RoundedRectangleBorder(
+                                                                    borderRadius: BorderRadius.circular(15), // Adjust border radius as needed
+                                                                  ),
+                                                                ),
+
+                                                                icon: Icon(Icons.image),
+                                                                onPressed: _chooseImage1,
+                                                                label: Text('Choose Usine Image'),
+                                                              ),
+                                                              SizedBox(height: 15,),
+                                                              Text("Select Usine Location : "),
+                                                              SizedBox(height: 15,),
+
+                                                              Expanded(
+                                                                child: Stack(
+                                                                  children: [
+                                                                    GoogleMap(
+                                                                      initialCameraPosition: CameraPosition(
+                                                                        target: LatLng(36.63364352606837, 10.246481271254885),
+                                                                        zoom: 10.0,
+                                                                      ),
+                                                                      onTap: (LatLng latLng) {
+                                                                        setState(() {
+                                                                          _selectedLocation = latLng;
+                                                                          _markers.clear();
+                                                                          _markers.add(
+                                                                            Marker(
+                                                                              markerId: MarkerId('selected-location'),
+                                                                              position: _selectedLocation!,
+                                                                              infoWindow: InfoWindow(title: 'Selected Location'),
+                                                                            ),
+                                                                          );
+                                                                        });
+                                                                      },
+                                                                      markers: _markers,
+                                                                      onMapCreated: (GoogleMapController controller) {
+                                                                        _mapController = controller;
+                                                                      },
+                                                                    ),
+                                                                    if (_selectedLocation != null)
+                                                                      Positioned(
+                                                                        bottom: 16.0,
+                                                                        left: 16.0,
+                                                                        child: Container(
+                                                                          padding: EdgeInsets.all(8.0),
+                                                                          color: Colors.white,
+                                                                          child: Text(
+                                                                            'Selected Location: ${_selectedLocation!.latitude}, ${_selectedLocation!.longitude}',
+                                                                            style: TextStyle(fontSize: 16.0),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                  ],
+                                                                ),
+                                                              ),
+
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(context).pop(); // Close the dialog
+                                                            },
+                                                            child: Text('Cancel'),
+                                                          ),
+                                                          TextButton.icon(
+                                                            icon: Icon(Icons.save),
+
+
+                                                            onPressed: () {
+                                                            },
+                                                            label: Text('Save'),
+                                                          ),
+                                                        ],
+                                                      ));
+                                                });
+
                                                 // Add your onPressed functionality here
                                                 // This function will be called when the button is pressed
                                                 print('Settings button pressed');
                                               },
                                             )
                                         ),
+                                        Positioned(
+                                            left: 10,
+                                            top: 3,
+                                            child: IconButton(
+                                              icon: Icon(Icons.delete,color: Colors.red,),
+                                              iconSize: 20,
+                                              onPressed: () {
+                                                showDialog(context: context, builder: (BuildContext context){
+                                                  return(
+                                                      AlertDialog(
+                                                        title: Text('Delete ${usines[index]["usine_name"]}'),
+                                                        content: Text("Are you sure you want to delete ${usines[index]["usine_name"]} ?"),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(context).pop(); // Close the dialog
+                                                            },
+                                                            child: Text('Cancel'),
+                                                          ),
+                                                          TextButton.icon(
+                                                            icon: Icon(Icons.delete,color: Colors.red,),
+
+
+                                                            onPressed: () {
+                                                            },
+                                                            label: Text('Delete',style: TextStyle(color: Colors.red),),
+                                                          ),
+                                                        ],
+                                                      ));
+                                                });
+
+                                                // Add your onPressed functionality here
+                                                // This function will be called when the button is pressed
+                                                print('Settings button pressed');
+                                              },
+                                            )
+                                        ),
+
                                       ],
                                     ),
                                   ),
@@ -658,11 +832,15 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     channel.sink.close();
+    _newUsineNameController.dispose();
+
     super.dispose();
   }
   void initState() {
     super.initState();
     _connectToWebSocket();
+    _newUsineNameController = TextEditingController();
+
 
   }
 
@@ -680,83 +858,6 @@ class _HomePageState extends State<HomePage> {
 
   }
 
-  void _showSpecialNotificationBottomSheet(BuildContext context) async {
-    final notifications = await fetchNotifications();
-    // Fetch notifications from the new URL
-    final nots = notifications.toList();
-
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Padding(
-
-          padding: EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Notifications:',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: nots.length,
-                  itemBuilder: (context, index) {
-                    final notification = nots[index]['notification'];
-                    final device = nots[index]['device'];
-                    final color;
-                    if (notification['level']=='warn'){
-                      color=Colors.orange;
-                    }else color= Colors.red;
-                    return Column(
-                      children: [
-                        SwipeTo(
-                            iconOnRightSwipe: Icons.delete,
-                            key: UniqueKey(),
-                            iconOnLeftSwipe: Icons.arrow_forward,
-                            onRightSwipe: (details) {
-                              print("\n Left Swipe Data --> ");
-                            },
-                            swipeSensitivity: 10,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: Colors.grey, // Border color
-                                  width: 2.0, // Border width
-                                ),
-                              ),
-                              child: ListTile(
-                                title: Text(notification['name']),
-                                subtitle: Text(device['device_name']),
-                                trailing: Text('Level: ${notification['level']}',
-                                    style : TextStyle(
-                                        color:color
-                                    )
-                                ),
-                              ),
-                            )
-                        ),
-                        SizedBox(height: 10,),
-                      ],
-                    );
-                  },
-                ),
-              ),
-
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   void _showNotificationBottomSheet(BuildContext context) async {
     final notifications = await fetchNotifications();
@@ -803,22 +904,66 @@ class _HomePageState extends State<HomePage> {
                               print("\n Left Swipe Data --> ");
                             },
                             swipeSensitivity: 10,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: Colors.grey, // Border color
-                                  width: 2.0, // Border width
-                                ),
-                              ),
-                              child: ListTile(
-                                title: Text(notification['name']),
-                                subtitle: Text(device['device_name']),
-                                trailing: Text('Level: ${notification['level']}',
-                                    style : TextStyle(
-                                      color:color
+                            child: Card(
+                              elevation: 3,
+                              child: ExpansionTile(
+                                title: Row(
+                                  children: [
+                                    Icon(Icons.notifications),
+                                    SizedBox(width: 5,),
+                                    Expanded(child: ListTile(
+                                      title: Text(notification['name']),
+                                      subtitle: Text(device['device_name']),
+                                      trailing: Text('Level: ${notification['level']}',
+                                          style : TextStyle(
+                                              color:color
+                                          )
+                                      ),
                                     )
+                                    )
+                                  ],
                                 ),
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(Icons.location_on),
+                                            SizedBox(width: 5,),
+                                            Text("Zone : ${nots[index]['zone']['zone_name']}",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),)
+                                          ],
+                                        ),
+                                        SizedBox(height: 5,),
+                                        Row(
+                                          children: [
+                                            Icon(Icons.smartphone),
+                                            SizedBox(width: 5,),
+                                            Text("Device : ${nots[index]['device']['device_name']}",
+                                            style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),)
+                                          ],
+                                        ),
+                                        SizedBox(height: 5,),
+                                        Text("${notification['parameter']} = ${notification['value'].toStringAsFixed(3)}",
+                                          style: TextStyle(color: color,fontWeight: FontWeight.bold,fontSize: 16),),
+                                        //SizedBox(height: 5,),
+                                        //Row(
+                                        //  children: [
+                                         //   Icon(Icons.compare_arrows),
+                                        //    SizedBox(width: 5,),
+                                        //    Text("Threshold : [${notification['warn_value']},${notification['crit_value']}]",
+                                        //      style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),)
+                                        //  ],
+                                        //),
+
+
+
+
+                                      ],
+                                    ),
+                                  )
+                                ],
                               ),
                             )
                         ),

@@ -199,14 +199,19 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin{
                           String result = chartData['name'].split(" : ")[1];
 
                           print(result); // Output: Ia
-                          subParameters.add(result); // Add 'result' to the subParameters list
+                          subParameters.add(result);
+                          // Add 'result' to the subParameters list
 
 
 
 
 
                           for (final entry in data) {
+                            if (entry[1] == null){
+                              entry[1] = 0;
+                            }
                             final value = entry[1].toDouble();
+
 
                             if (value < minY) {
                               minY = value;
@@ -306,72 +311,79 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin{
                                 shrinkWrap: true,
                                 itemCount: subParameters.length,
                                 itemBuilder: (context, index){
-                                  return SizedBox(
-                                    height: 20,
-                                    child: Row(
-                                      children: [
-                                        SizedBox(width: 150,),
-                                        Column(
+                                  return Column(
+                                    children: [
+                                      SizedBox(
+                                        height: 20,
+                                        child: Row(
                                           children: [
-                                            (
-                                                Container(
-                                                  height: 10,
-                                                  width: 10,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(20),
-                                                      color: randomColors[index]
-                                                  ),
-                                                )
+                                            SizedBox(width: 20,),
+                                            Column(
+                                              children: [
+                                                (
+                                                    Container(
+                                                      height: 15,
+                                                      width: 15,
+                                                      decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(20),
+                                                          color: randomColors[index]
+                                                      ),
+                                                    )
+                                                ),
+                                              ],
                                             ),
+                                            SizedBox(width: 10,),
+                                            Text("${subParameters[index]} :",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),)
                                           ],
                                         ),
-                                        SizedBox(width: 10,),
-                                        Text(subParameters[index])
-                                      ],
-                                    ),
+                                      ),
+                                      SizedBox(height: 10,),
+
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 11.0), // Adjust the horizontal padding
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10),
+                                              color: Colors.white,
+                                              border: Border.all(
+                                                  color: Colors.grey
+                                              )
+                                          ),
+                                          child: SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: DataTable(
+
+                                              columnSpacing: 45, // Adjust the spacing between columns
+                                              dataRowHeight: 35, // Adjust the height of each row
+                                              columns: [
+                                                DataColumn(label: Text("Max Value",
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                  ),)),
+                                                DataColumn(label: Text("Min Value",style: TextStyle(
+                                                  fontSize: 13,
+                                                ),)),
+                                                DataColumn(label: Text("Avg Value",style: TextStyle(
+                                                  fontSize: 13,
+                                                ),)),
+                                              ],
+                                              rows: [
+                                                DataRow(cells: [
+                                                  DataCell(Text(maxY.toStringAsFixed(3))),
+                                                  DataCell(Text(minY.toStringAsFixed(3))),
+                                                  DataCell(Text(((minY+maxY)/2).toStringAsFixed(3))),
+                                                ])
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 10,),
+
+                                    ],
                                   );
                                 }),
-                            SizedBox(height: 10,),
 
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 11.0), // Adjust the horizontal padding
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white,
-                                      border: Border.all(
-                                        color: Colors.grey
-                                      )
-                                ),
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: DataTable(
-
-                                    columnSpacing: 45, // Adjust the spacing between columns
-                                    dataRowHeight: 35, // Adjust the height of each row
-                                    columns: [
-                                      DataColumn(label: Text("Max Value",
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                      ),)),
-                                      DataColumn(label: Text("Min Value",style: TextStyle(
-                                        fontSize: 13,
-                                      ),)),
-                                      DataColumn(label: Text("Avg Value",style: TextStyle(
-                                        fontSize: 13,
-                                      ),)),
-                                    ],
-                                    rows: [
-                                      DataRow(cells: [
-                                        DataCell(Text("dash")),
-                                        DataCell(Text("dash")),
-                                        DataCell(Text("dash")),
-                                      ])
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
 
                             SizedBox(height: 20,),
                           ],
@@ -379,7 +391,135 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin{
                       },
                     ),
                   ),
-                  Text("data")
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: ListView.builder(
+                      itemCount: data.length,
+                        itemBuilder: (context, index){
+                          final Map<String, dynamic> parameterData = data[index];
+                          final String parameterName = parameterData['parameter'];
+                          List<ValueItem> electricalParameterItems = [
+                            ValueItem(value: 'voltage',label: 'Voltages Ph-N'),
+                            ValueItem(value: 'Voltages Ph-Ph',label: 'Voltages Ph-Ph'),
+                            ValueItem(value: 'current',label: 'Courants'),
+                            ValueItem(value: 'p_active',label: 'Active Power'),
+                            ValueItem(value: 'p_active_LDC',label: 'Active Power Load Duration Curve (LDC)'),
+                            ValueItem(value: 'p_reactive',label: 'Reactive Power'),
+                            ValueItem(value: 'p_reactive_LDC',label: 'Reactive Power Load Duration Curve (LDC)'),
+                            ValueItem(value: 'p_apparent',label: 'Apparent Power'),
+                            ValueItem(value: 'p_apparent_LDC',label: 'Apparent Power Load Duration Curve (LDC)'),
+                            ValueItem(value: 'fp',label: 'Power Factor'),
+                            ValueItem(value: 'thdi',label: 'THDI'),
+                            ValueItem(value: 'thdv',label: 'THDV'),
+                          ];
+                          // Find the corresponding ValueItem
+                          ValueItem? selectedValueItem;
+                          for (ValueItem item in electricalParameterItems) {
+                            if (item.value == parameterName) {
+                              selectedValueItem = item;
+                              break;
+                            }
+                          }
+                          String parameterLabel = selectedValueItem != null ? selectedValueItem.label : 'Label not found';
+
+
+                          final List<dynamic> charts = parameterData['chart'];
+
+                          List<String> subParameters = [];
+                          for (final chartData in charts) {
+                            final List<dynamic> data = chartData['data'];
+                            print("chart[$index]=${chartData['data']}");
+                            print("param[$index]=${chartData['name']}");
+                            String result = chartData['name'].split(" : ")[1];
+
+                            print(result); // Output: Ia
+                            subParameters.add(result);
+                            // Add 'result' to the subParameters list
+
+                          }
+                          print(subParameters);
+                          for (int index = 0; index < charts.length; index++) {
+                            final chartData = charts[index];
+                            final List<dynamic> data = chartData['data'];
+                            final List<FlSpot> lineChartData = data.map((entry) => FlSpot(
+                              data.indexOf(entry).toDouble(),
+                              entry[1].toDouble(), // Assuming entry is a List<dynamic> with [timestamp, value]
+                            )).toList();
+                            print("indddddddddddddd$index");
+
+                          }
+
+
+
+
+                          print(data[index]['chart'][0]['data']);
+                          return Column(
+                            children: [
+                              Card(
+                                elevation: 3,
+                                child: ExpansionTile(
+                                  title: Row(
+                                    children: [
+                                      Icon(Icons.bolt,
+                                        size: 31,),
+                                      SizedBox(width: 3,),
+                                      Text(
+                                        '$parameterLabel',
+                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(width: 20,),
+                                    ],
+                                  ),
+                                  children: [
+                                    Container(
+
+                                      child: ListView.builder(
+                                        physics: NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: subParameters.length,
+
+                                          itemBuilder: (context1, index1){
+                                        return Card(
+                                          elevation: 3,
+                                          child: ExpansionTile(
+                                            title: Text(subParameters[index1]),
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: Colors.grey
+                                                    ),
+                                                    borderRadius: BorderRadius.circular(10)
+                                                ),
+                                                child: DataTable(
+                                                  columns: [
+                                                    DataColumn(label: Text('Timestamp')),
+                                                    DataColumn(label: Text('Value')),
+                                                  ],
+                                                  rows: data[index]['chart'][index1]['data'].map<DataRow>((item) {
+                                                    return DataRow(
+                                                      cells: [
+                                                        DataCell(Text(item[0].toString())),
+                                                        DataCell(Text(item[1].toStringAsFixed(3))),
+                                                      ],
+                                                    );
+                                                  }).toList(),
+                                                ),
+                                              ),
+
+                                            ],
+                                          ),
+                                        );
+                                      }),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 10,)
+                            ],
+                          );
+                        }),
+                  )
 
 
                 ],

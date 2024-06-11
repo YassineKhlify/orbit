@@ -31,7 +31,6 @@ class _PredictionsPageState extends State<PredictionsPage> with TickerProviderSt
     });
     print(predictions);
     Map<String, dynamic> json = jsonDecode(predictions);
-    List<List<double>> data = List<List<double>>.from(json['i'].map((item) => List<double>.from(item)));
 
 
 
@@ -146,53 +145,137 @@ class _PredictionsPageState extends State<PredictionsPage> with TickerProviderSt
                   children: [
                     Padding(
                       padding: EdgeInsets.all(10),
-                      child: Column(
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.bolt,
-                                    size: 31,),
-                                  SizedBox(width: 3,),
-                                  Text(
-                                    'Courant :',
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              )
-                          ),
+                      child: ListView.builder(
+                        itemCount: widget.params.length,
+                        itemBuilder: (context, index){
+                          print(widget.params[index]);
+                          List<ValueItem> electricalParameterItems = [
+                            ValueItem(label: 'Imported Energy', value: 'eit'),
+                            ValueItem(label: 'Current', value: 'i'),
+                            ValueItem(label: 'Power Factor', value: 'pft'),
+                            ValueItem(label: 'Active Power', value: 'pt'),
+                            ValueItem(label: 'Reactive Power', value: 'qt'),
+                            ValueItem(label: 'Apparent Power', value: 'st'),
+                            ValueItem(label: 'THDT', value: 'thdt')
+                          ];
+                          // Find the corresponding ValueItem
+                          ValueItem? selectedValueItem;
+                          for (ValueItem item in electricalParameterItems) {
+                            if (item.value == widget.params[index]) {
+                              selectedValueItem = item;
+                              break;
+                            }
+                          }
+                          String parameterLabel = selectedValueItem != null ? selectedValueItem.label : 'Label not found';
 
-                          Container(
-                            height: 300,
-                            padding: const EdgeInsets.all(8.0),
-                            child: LineChart(
-                              LineChartData(
-                                borderData: FlBorderData(
-                                  show: true,
-                                  border: Border.all(color: Colors.black, width: 1),
-                                ),
-                                minX: 0,
-                                lineBarsData: [
-                                  LineChartBarData(
-                                    spots: data.asMap().entries.map((entry) {
-                                      return FlSpot(entry.key.toDouble(), entry.value.first);
-                                    }).toList(),
-                                    isCurved: true,
-                                    color: Colors.blue,
-                                    barWidth: 4,
-                                    isStrokeCapRound: true,
-                                    belowBarData: BarAreaData(show: false),
+
+                          List<List<double>> data = List<List<double>>.from(json[widget.params[index]].map((item) => List<double>.from(item)));
+
+                          List<double> flattenedList = data.map((innerList) => innerList.first).toList();
+
+                          double minValue = flattenedList.reduce((a, b) => a < b ? a : b);
+                          double maxValue = flattenedList.reduce((a, b) => a > b ? a : b);
+                          double avgValue = flattenedList.reduce((a, b) => a + b) / flattenedList.length;
+
+                          return Column(
+                            children: [
+                              Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.bolt,
+                                        size: 31,),
+                                      SizedBox(width: 3,),
+                                      Text(
+                                        '$parameterLabel :',
+                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  )
+                              ),
+
+                              Container(
+                                  height: 300,
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: LineChart(
+                                      LineChartData(
+                                        borderData: FlBorderData(
+                                          show: true,
+                                          border: Border.all(color: Colors.black, width: 1),
+                                        ),
+                                        minX: 0,
+                                        lineBarsData: [
+                                          LineChartBarData(
+                                            spots: data.asMap().entries.map((entry) {
+                                              return FlSpot(entry.key.toDouble(), entry.value.first);
+                                            }).toList(),
+                                            isCurved: true,
+                                            color: Colors.blue,
+                                            barWidth: 2,
+                                            isStrokeCapRound: true,
+                                            belowBarData: BarAreaData(show: false),
+                                          ),
+                                        ],
+                                      )
+                                  )
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 11.0), // Adjust the horizontal padding
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white,
+                                      border: Border.all(
+                                          color: Colors.grey
+                                      )
                                   ),
-                                ],
-                              )
-                            )
-                          ),
-                        ],
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: DataTable(
+
+                                      columnSpacing: 45, // Adjust the spacing between columns
+                                      dataRowHeight: 35, // Adjust the height of each row
+                                      columns: [
+                                        DataColumn(label: Text("Max Value",
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                          ),)),
+                                        DataColumn(label: Text("Min Value",style: TextStyle(
+                                          fontSize: 13,
+                                        ),)),
+                                        DataColumn(label: Text("Avg Value",style: TextStyle(
+                                          fontSize: 13,
+                                        ),)),
+                                      ],
+                                      rows: [
+                                        DataRow(cells: [
+                                          DataCell(Text(maxValue.toStringAsFixed(2))),
+                                          DataCell(Text(minValue.toStringAsFixed(2))),
+                                          DataCell(Text(avgValue.toStringAsFixed(2))),
+                                        ])
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+
+                            ],
+                          );
+                        },
+
                       ),
 
                     ),
-                    Text("data")
+                    Padding(
+                        padding: EdgeInsets.all(10),
+                      child: ListView.builder(
+                        itemCount: widget.params.length,
+                          itemBuilder: (context,index){
+
+                          },
+                      ),
+                    )
 
 
                   ],

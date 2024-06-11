@@ -7,10 +7,12 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class NotificationListener {
+  final String id;
+
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   List<Map<String, dynamic>> _previousData = [];
 
-  NotificationListener() {
+  NotificationListener({required this.id}) {
     // Initialize the plugin
     final InitializationSettings initializationSettings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -26,7 +28,7 @@ class NotificationListener {
     });
   }
   Future<void> fetchData() async {
-    final response = await http.get(Uri.parse('https://orbitsmart.energy/notification/settings/active/6506dfa5aa3237acf9bd8c7e'));
+    final response = await http.get(Uri.parse('https://orbitsmart.energy/notification/settings/active/$id'));
     if (response.statusCode == 200) {
       final List<Map<String, dynamic>> newData = jsonDecode(response.body).cast<Map<String, dynamic>>();
       final List<Map<String, dynamic>> newNotifications = findNewNotifications(newData);

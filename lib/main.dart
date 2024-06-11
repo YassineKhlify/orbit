@@ -37,12 +37,11 @@ void main()async {
 }
 
 class LoginApp extends StatelessWidget {
-  final MyNotification.NotificationListener _notificationListener = MyNotification.NotificationListener();
 
 
   @override
   Widget build(BuildContext context) {
-    _notificationListener.startListening();
+    //_notificationListener.startListening();
 
     return MaterialApp(
       title: 'Login Page',

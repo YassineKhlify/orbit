@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:orbit/add_device.dart';
+import 'package:orbit/edit_device.dart';
+import 'package:orbit/view_device.dart';
 
 class ViewStationPage extends StatefulWidget {
 
@@ -102,8 +104,10 @@ class _ViewStationPageState extends State<ViewStationPage> {
 
 
     List<Color> randomColors = generateRandomColors(n);
+    final List<String> bottomTitles = ['Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.','Sat.','Sun.'];
 
-    final List<double> barData = [8,10,1,5, 8, 10, 12, 6];
+
+    final List<double> barData = [1.8,2.0,1.1,1.5, 1.8, 2.0,2.1];
 
 
 
@@ -211,6 +215,7 @@ class _ViewStationPageState extends State<ViewStationPage> {
                             return Card(
                               elevation: 3,
                               child: ExpansionTile(
+
                                 title: Row(
                                   children: [
                                     Icon(Icons.location_on),
@@ -431,7 +436,7 @@ class _ViewStationPageState extends State<ViewStationPage> {
                                                               ),
                                                               Row(
                                                                 children: [
-                                                                  SizedBox(width: 175,),
+                                                                  SizedBox(width: 120,),
                                                                   IconButton(
                                                                       onPressed: (){
                                                                         showDialog(context: context, builder: (BuildContext context){
@@ -462,7 +467,19 @@ class _ViewStationPageState extends State<ViewStationPage> {
 
                                                                       },
                                                                       icon: Icon(Icons.delete,color: Colors.red,)),
-                                                                  IconButton(onPressed: (){}, icon: Icon(Icons.remove_red_eye))
+                                                                  IconButton(
+                                                                      onPressed: () {
+                                                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>EditDevice(
+                                                                            myDevice: filteredDevices[index][index1])));
+                                                                      },
+                                                                      icon: Icon(Icons.edit)),
+                                                                  IconButton(
+                                                                      onPressed: (){
+                                                                        Navigator.push(context, MaterialPageRoute(builder:(context)=>ViewDevice(
+                                                                          myDevice: filteredDevices[index][index1],
+                                                                        ) ));
+                                                                      },
+                                                                      icon: Icon(Icons.remove_red_eye))
 
                                                                 ],
                                                               )
@@ -552,7 +569,7 @@ class _ViewStationPageState extends State<ViewStationPage> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16
                                   ),),
-                                Expanded(child: Text("0.000 kWh"))
+                                Expanded(child: Text("17674.00 kWh"))
                               ],
                             )
           
@@ -768,9 +785,9 @@ class _ViewStationPageState extends State<ViewStationPage> {
                                   show: true,
                                   drawVerticalLine: false, // Set to false to hide vertical grid lines
                                 ),
-                                maxY: 14,
+                                maxY: 2.5,
                                 // Bar groups data
-                                groupsSpace: 12,
+                                groupsSpace: 18,
                                 barTouchData: BarTouchData(
                                   enabled: true, // Disable touch interaction
                                 ),
@@ -781,6 +798,19 @@ class _ViewStationPageState extends State<ViewStationPage> {
 
                                   rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                                   topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                  bottomTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                          showTitles: true,
+                                          getTitlesWidget: (double value, TitleMeta meta){
+                                            int index = value.toInt();
+                                            // Ensure the index is within the bounds of the bottomTitles list
+                                            if (index < 0 || index >= bottomTitles.length) {
+                                              return Text('');
+                                            }
+                                            return Text(bottomTitles[index].toString());
+                                          }
+                                      )
+                                  ),
                                 ),
 
                                 borderData: FlBorderData(
@@ -817,11 +847,11 @@ class _ViewStationPageState extends State<ViewStationPage> {
                       if(n>1)
                         Positioned(
                           top: 520,
-                          left: -69,
+                          left: -107,
                           child: Transform.rotate(
                             angle: -90 * 3.1415926535 / 180,
                             child: Text(
-                              'Imported Energy (kWh)',
+                              'Imported Energy (kWh) - May 2024',
                               style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -848,7 +878,6 @@ class _ViewStationPageState extends State<ViewStationPage> {
                 ),
           
               ),
-              Text('This is a blank View Station page.'),
             ],
           ),
         ),

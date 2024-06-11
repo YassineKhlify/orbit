@@ -692,9 +692,10 @@ class UsineDetails extends StatelessWidget {
                     right: 10,
                     top: 3,
                     child: IconButton(
-                      icon: Icon(Icons.settings),
+                      icon: Icon(Icons.edit),
                       iconSize: 20,
                       onPressed: () {
+
                         // Add your onPressed functionality here
                         // This function will be called when the button is pressed
                         print('Settings button pressed');

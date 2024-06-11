@@ -146,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                     print("password: ${_passwordController.text}");
                     var email = _emailController.text;
                     var password = _passwordController.text;
-                    if (email=="warda@warda.com"&&password=="warda"){
+                    if (email=="admin@warda.com"&&password=="warda"){
                       print("object");
                       _id=warda;
                       auth = true;

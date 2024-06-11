@@ -413,30 +413,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                 optionTextStyle: const TextStyle(fontSize: 16),
                 selectedOptionIcon: const Icon(Icons.check_circle),
               ),
-              SizedBox(height: 10,),
-              Text(
-                "Select Parameters to Show:",
-                style: TextStyle(
-                  fontSize: 15, // Adjust the font size as needed
-                ),
-              ),
-              SizedBox(height: 5,),
-              MultiSelectDropDown(
-                showClearIcon: true,
-                controller: _controller,
-                onOptionSelected: (options) {
-                  parameterOptions = options;
-                  print(options);
-                  // Other logic related to option selection if needed
-                },
-                options:  adequateParameters,
-                disabledOptions: const [ValueItem(label: 'Option 1', value: '1')],
-                selectionType: SelectionType.multi,
-                chipConfig: const ChipConfig(wrapType: WrapType.wrap),
-                dropdownHeight: 300,
-                optionTextStyle: const TextStyle(fontSize: 16),
-                selectedOptionIcon: const Icon(Icons.check_circle),
-              ),
+
               SizedBox(height: 10,),
               Text(
                 "Select Usines:",
@@ -607,6 +584,29 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                 selectedOptionIcon: const Icon(Icons.check_circle),
               ),
               SizedBox(height: 10,),
+              Text(
+                "Select Parameters to Show:",
+                style: TextStyle(
+                  fontSize: 15, // Adjust the font size as needed
+                ),
+              ),
+              SizedBox(height: 5,),
+              MultiSelectDropDown(
+                showClearIcon: true,
+                controller: _controller,
+                onOptionSelected: (options) {
+                  parameterOptions = options;
+                  print(options);
+                  // Other logic related to option selection if needed
+                },
+                options:  adequateParameters,
+                disabledOptions: const [ValueItem(label: 'Option 1', value: '1')],
+                selectionType: SelectionType.multi,
+                chipConfig: const ChipConfig(wrapType: WrapType.wrap),
+                dropdownHeight: 300,
+                optionTextStyle: const TextStyle(fontSize: 16),
+                selectedOptionIcon: const Icon(Icons.check_circle),
+              ),
 
 
               SizedBox(height: 10,),
